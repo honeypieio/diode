@@ -1,0 +1,41 @@
+
+{{#each additionalInfo}}
+  <div class="form-group">
+  {{#ifCond type '==' 'checkboxes'}}
+    <label for="{{id}}">{{{description}}}{{#if help}} (<a href="{{help.link}}" target="_blank">{{help.text}}</a>){{/if}}</label>
+    <select multiple class="form-control" id="{{id}}" name="item[additionalInfo][{{id}}]" {{required}}>
+      {{#each options}}
+        <option value="{{uriencode name}}">{{name}}</option>
+      {{/each}}
+    </select>
+  {{/ifCond}}
+  {{#ifCond type '==' 'dropdown'}}
+    <label for="{{id}}">{{{description}}}{{#if help}} (<a href="{{help.link}}" target="_blank">{{help.text}}</a>){{/if}}</label>
+    <select class="form-control" id="{{id}}" name="item[additionalInfo][{{id}}]" {{#if required}}required{{/if}}>
+      {{#each options}}
+        <option value="{{name}}" {{#ifCond (lookup ../../item.additionalInfo ../id) '==' id}}selected{{/ifCond}}>{{name}}</option>
+      {{/each}}
+    </select>
+  {{/ifCond}}
+
+  {{#ifCond type '==' 'number'}}
+    <label for="{{id}}">{{{description}}}{{#if help}} (<a href="{{help.link}}" target="_blank">{{help.text}}</a>){{/if}}</label>
+    <div class="input-group">
+      <input type="number" class="form-control" id="{{id}}" name="item[additionalInfo][{{id}}]" value="{{lookup ../item.additionalInfo id}}" step="{{step}}" min="{{min}}" max="{{max}}" placeholder="{{description}}" {{#if required}}required{{/if}} />
+
+      {{#if unit}}
+        <div class="input-group-append">
+          <span class="input-group-text" id="basic-addon2">{{unit}}</span>
+        </div>
+      {{/if}}
+    </div>
+  {{/ifCond}}
+
+  {{#ifCond type '==' 'text'}}
+    <label for="{{id}}">{{{description}}}{{#if help}} (<a href="{{help.link}}" target="_blank">{{help.text}}</a>){{/if}}</label>
+    <input type="text" class="form-control" id="{{id}}" name="item[additionalInfo][{{id}}]" value="{{lookup ../item.additionalInfo id}}" placeholder="{{description}}" {{#if required}}required{{/if}} />
+  {{/ifCond}}
+
+
+  </div>
+{{/each}}

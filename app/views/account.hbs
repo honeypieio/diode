@@ -1,0 +1,76 @@
+<div class="row mb-4 ml-1">
+
+  <h4>Welcome, back {{user.first_name}}!</h4>
+
+</div>
+
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body p-4">
+
+        {{#ifCond items.length '==' 0}}
+          <h4 class="mb-3 text-center">There isn't anything for you to test at the moment...</h4>
+          <a href="{{public_address}}/items/register" class="btn btn-block btn-primary ">Register An Item</a>
+        {{/ifCond}}
+        {{#ifCond items.length '==' 1}}
+          <h4 class="mb-3 text-center">There is currently <b>1</b> item for you to test</h4>
+          <a href="{{public_address}}/items/test/{{items.0.uid}}" class="btn btn-block btn-primary ">Start Testing!</a>
+        {{/ifCond}}
+        {{#ifCond items.length '>' 1}}
+          <h4 class="mb-3 text-center">There are currently <b>{{items.length}}</b> items for you to test</h4>
+          <a href="{{public_address}}/items/test" class="btn btn-block btn-primary ">Start Testing!</a>
+        {{/ifCond}}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mb-3">Account Details</h4>
+
+        <p class="mb-2">You're a <b>{{user.humanClass}}</b>,
+          and belong to:
+        </p>
+        <div class="container">
+          <div class="container">
+            <ul>
+              {{#each user.organisations}}
+                <li>{{lookup (lookup (lookup ../user.allOrganisations this) 'details') 'title'}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mb-3">Training</h4>
+
+        <p class="mb-2">You're trained to:
+        </p>
+        <div class="container">
+          <div class="container">
+            <ul>
+              {{#each user.permissions}}
+                <li>
+                  {{lookup (lookup (lookup ../user.allProcedures this) 'details') 'name'}}
+                  <small class="text-muted">{{lookup (lookup (lookup ../user.allProcedures this) 'details') 'description'}}</small>
+                </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

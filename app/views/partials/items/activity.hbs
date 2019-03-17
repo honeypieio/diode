@@ -1,0 +1,90 @@
+
+
+
+	<table data-classes="table table-bordered table-light" data-toggle="table">
+		<thead>
+			<th>Date</th>
+			<th>Test</th>
+			<th>User</th>
+      <th>Outcome</th>
+		</thead>
+		<tbody>
+
+      {{#each activity}}
+
+			{{#ifCond action '==' "testing_complete"}}
+				{{#unless @first}}
+					<tr>
+						<td colspan="4"></td>
+					</tr>
+				{{/unless}}
+			{{/ifCond}}
+
+        {{#ifCond action '==' "procedure_complete"}}
+          {{#unless @first}}
+            <tr>
+              <td colspan="4"></td>
+            </tr>
+          {{/unless}}
+        {{/ifCond}}
+
+        {{#ifCond action '==' 'register'}}
+          {{#unless @first}}
+            <tr>
+              <td colspan="4"></td>
+            </tr>
+          {{/unless}}
+          <tr class="bg-grey">
+            <td>{{niceTimestamp timestamp}}</td>
+            <td>Item Registered</td>
+            <td>{{lookup (lookup ../users user_id) 'name'}}</td>
+            <td>-</td>
+
+          </tr>
+
+        {{else}}
+
+
+
+          <tr
+
+          {{#ifCond action '==' "procedure_complete"}}
+            class="bg-grey"
+          {{/ifCond}}
+
+					{{#ifCond action '==' "testing_complete"}}
+            class="bg-grey"
+          {{/ifCond}}
+
+          >
+            <td>{{niceTimestamp timestamp}}</td>
+            <td>
+							{{#ifCond action '==' "testing_complete"}}
+								Testing Complete
+							{{else}}
+	              {{#if info.test_id}}
+	                {{lookup (lookup (lookup ../tests info.test_id) 'details') 'check'}}
+									{{#if info.note}}
+									<br />
+									Note: {{info.note}}
+									{{/if}}
+	              {{else}}
+	                {{#if info.procedure_id}}
+	                  {{lookup (lookup (lookup ../procedures info.procedure_id) 'details') 'name'}}
+	                {{/if}}
+	              {{/if}}
+							{{/ifCond}}
+            </td>
+            <td>{{lookup (lookup ../users user_id) 'name'}}</td>
+            <td
+              {{#ifCond info.outcome '==' 'fail'}}class="text-danger"{{/ifCond}}
+              {{#ifCond info.outcome '==' 'pass'}}class="text-success"{{/ifCond}}>
+              {{formToPlain info.outcome}}
+            </td>
+          </tr>
+
+        {{/ifCond}}
+
+      {{/each}}
+		</tbody>
+	</table>

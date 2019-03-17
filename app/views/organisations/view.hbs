@@ -1,0 +1,49 @@
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-light mb-3">
+          {{#each organisation.details}}
+            <tr>
+              <td>{{formToPlain @key}}</td>
+              <td>
+                {{#if (niceTimestamp this)}}
+                  {{niceTimestamp this}}
+                {{else}}
+                  {{this}}
+                {{/if}}
+
+              </td>
+            </tr>
+          {{/each}}
+        </table>
+        <a href="{{public_address}}/organisations/update" class="btn btn-block btn-primary">Update Basic Details</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="text-center mb-2">{{items.length}} items</h3>
+        <a class="btn btn-block btn-primary" href="{{public_address}}/items/view">Manage Items</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h3 class="text-center mb-2">{{users.length}} active users</h3>
+        <a class="btn btn-block btn-primary" href="{{public_address}}/users">Manage Users</a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="row">
+  <div class="col-md-6">
+
+  </div>
+</div>

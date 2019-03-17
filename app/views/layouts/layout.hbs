@@ -1,0 +1,289 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{{title}} | Diode Testing</title>
+    <meta name="description" content="Diode Testing - electrical testing suite">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="apple-touch-icon" href="apple-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <script src="{{public_address}}/vendors/jquery/dist/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="{{public_address}}/vendors/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{public_address}}/vendors/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{public_address}}/vendors/themify-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="{{public_address}}/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="{{public_address}}/vendors/selectFX/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="{{public_address}}/vendors/jqvmap/dist/jqvmap.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.4/bootstrap-table.min.css">
+
+    <link rel="stylesheet" href="{{public_address}}/assets/css/style.css">
+    <link rel="stylesheet" href="{{public_address}}/assets/css/bootstrap-overrides.css">
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body{{#if sidebarClosed}} class="open"{{/if}}>
+
+
+    <!-- Left Panel -->
+
+    <aside id="left-panel" class="left-panel">
+        <nav class="navbar navbar-expand-sm navbar-default">
+
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" id="main-page-logo" href="/"><img src="{{public_address}}/images/logo1.svg" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="/"><img src="{{public_address}}/images/logo2.svg" alt="Logo"></a>
+            </div>
+
+            <div id="main-menu" class="main-menu collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                  {{#if user}}
+
+
+                    <h3 class="menu-title pt-0">
+                      Items
+                    </h3><!-- /.menu-title -->
+
+                    <li {{#if testItemActive}}class="active"{{/if}}>
+                      <a href="{{public_address}}/items/test"><i class="menu-icon fas fa-plug"></i>Test Item</a>
+                    </li>
+                    <li {{#if registerItemActive}}class="active"{{/if}}>
+                      <a href="{{public_address}}/items/register"><i class="menu-icon fas fa-clipboard-list"></i>Register Item</a>
+                    </li>
+                    <li {{#if viewItemsActive}}class="active"{{/if}}>
+                      <a href="{{public_address}}/items/view"><i class="menu-icon fas fa-tasks"></i>View All Items</a>
+                    </li>
+
+
+                    {{#ifUserClass user.class '["local-admin"]'}}
+                      <h3 class="menu-title">
+                        {{#ifCond user.organisations.length '==' '1'}}
+                          {{user.organisation.organisation_id}}
+                        {{/ifCond}}
+
+                        {{#ifCond user.organisations.length '>' '1'}}
+                          My Organisations
+                        {{/ifCond}}
+                      </h3><!-- /.menu-title -->
+
+                      <li>
+                          <a href="{{public_address}}/organisations/view"> <i class="menu-icon fas fa-building"></i>
+
+                            {{#ifCond user.organisations.length '==' '1'}}
+                              {{user.organisation.organisation_id}}
+                            {{/ifCond}}
+
+                            {{#ifCond user.organisations.length '>' '1'}}
+                              My Organisations
+                            {{/ifCond}}
+
+                          </a>
+                      </li>
+
+                      <!--<li class="menu-item-has-children dropdown">
+                          <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fas fa-users"></i>Users</a>
+                          <ul class="sub-menu children dropdown-menu">
+                              <li><i class="menu-icon fas fa-users"></i><a href="{{public_address}}/users/manages">Manage Users</a></li>
+                              <li><i class="menu-icon fas fa-user-plus"></i><a href="{{public_address}}/users/add">Add User</a></li>
+                          </ul>
+                      </li>-->
+
+                      <h3 class="menu-title">
+                        My Account
+                      </h3><!-- /.menu-title -->
+
+                      <li {{#if accountActive}}class="active"{{/if}}>
+                          <a href="{{public_address}}/account"> <i class="menu-icon fas fa-user-circle"></i>My Account</a>
+                      </li>
+
+                      <!--<li {{#if supportActive}}class="active"{{/if}}>
+                          <a href="{{public_address}}/support"> <i class="menu-icon far fa-question-circle"></i>Support</a>
+                      </li>-->
+
+                    {{/ifUserClass}}
+                    {{else}}
+                      <li {{#if loginActive}}class="active"{{/if}}>
+                          <a href="{{public_address}}/login"> <i class="menu-icon fa fa-user"></i>Login</a>
+                      </li>
+                      <li {{#if supportActive}}class="active"{{/if}}>
+                          <a href="{{public_address}}/support"> <i class="menu-icon far fa-question-circle"></i>Support</a>
+                      </li>
+                    {{/if}}
+
+
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </nav>
+    </aside><!-- /#left-panel -->
+
+    <!-- Left Panel -->
+
+    <!-- Right Panel -->
+
+    <div id="right-panel" class="right-panel">
+
+        <!-- Header-->
+        <header id="header" class="header">
+
+            <div class="header-menu">
+
+                <div class="col-sm-7">
+                    <a id="menuToggle" class="menutoggle pull-left"><i class="fas fa-arrow-left"></i></a>
+
+                      <p class="mt-2 mb-3 ml-2 mb-md-0">{{title}}</p>
+
+                </div>
+
+                <div class="col-sm-5">
+                    <div class="float-right">
+                      {{#if user}}
+                        <a class="btn btn-danger d-none d-md-block" href="{{public_address}}/logout">Logout</a>
+                      {{/if }}
+                    </div>
+                </div>
+            </div>
+
+        </header><!-- /header -->
+        <!-- Header-->
+
+
+
+        <div class="content mt-3 mb-4">
+          {{#if user}}
+            {{#unless hideOrganisationSelect}}
+              {{>organisations/select user=user}}
+            {{/unless}}
+          {{/if}}
+
+          {{#ifCond errors.length '>' 0}}
+            <div class="row">
+              <div class="col-sm-12">
+                  <div class="alert  alert-danger alert-dismissible fade show" role="alert">
+                      <span class="badge badge-pill badge-danger">Error</span> {{{errors.0.msg}}}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+              </div>
+            </div>
+          {{/ifCond}}
+
+          {{#if error}}
+            <div class="row">
+              <div class="col-sm-12">
+                  <div class="alert  alert-danger alert-dismissible fade show" role="alert">
+                      <span class="badge badge-pill badge-danger">Error</span> {{{error}}}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if error_msg}}
+            <div class="row">
+              <div class="col-sm-12">
+                  <div class="alert  alert-danger alert-dismissible fade show" role="alert">
+                      <span class="badge badge-pill badge-danger">Error</span> {{{error_msg}}}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if success_msg}}
+            <div class="row">
+              <div class="col-sm-12">
+                  <div class="alert  alert-success alert-dismissible fade show" role="alert">
+                      <span class="badge badge-pill badge-success">Success</span> {{{success_msg}}}
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+              </div>
+            </div>
+          {{/if}}
+
+
+          {{{body}}}
+
+
+
+        </div> <!-- .content -->
+    </div><!-- /#right-panel -->
+
+    <!-- Right Panel -->
+
+    <script src="{{public_address}}/vendors/popper.js/dist/umd/popper.min.js"></script>
+    <script src="{{public_address}}/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="{{public_address}}/assets/js/main.js"></script>
+  	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.4/bootstrap-table.min.js"></script>
+
+    <script>
+    jQuery(function ($) {
+      var sidebar = "";
+
+      $("a").attr('href', function(i, h) {
+        if(h){
+          if("{{sidebarClosed}}"){
+            h += "?sidebar=closed"
+          }
+          if("{{user.organisation.organisation_id}}"){
+            return h + (h.indexOf('?') != -1 ? "&organisation={{user.organisation.organisation_id}}" : "?organisation={{user.organisation.organisation_id}}");
+          }
+        }
+      });
+
+      $("form").attr('action', function(i, h) {
+        if(h){
+          if("{{sidebarClosed}}"){
+            h += "?sidebar=closed"
+          }
+          if("{{user.organisation.organisation_id}}"){
+            return h + (h.indexOf('?') != -1 ? "&organisation={{user.organisation.organisation_id}}" : "?organisation={{user.organisation.organisation_id}}");
+          }
+        }
+      });
+
+      $(":input").each(function(){
+        if(!$(this).attr("autocomplete")){
+          $(this).prop("autocomplete", "off")
+        }
+
+      });
+      {{#if sidebarClosed}}
+        $('body').addClass('open');
+      {{/if}}
+    })
+
+
+    </script>
+
+    <!--<script src="{{public_address}}/vendors/chart.js/dist/Chart.bundle.min.js"></script>-->
+    <!--<script src="{{public_address}}/assets/js/dashboard.js"></script>-->
+    <!--<script src="{{public_address}}/assets/js/widgets.js"></script>-->
+    <!--<script src="{{public_address}}/vendors/jqvmap/dist/jquery.vmap.min.js"></script>-->
+    <!--<script src="{{public_address}}/vendors/jqvmap/examples/js/jquery.vmap.sampledata.js"></script>-->
+    <!--<script src="{{public_address}}/vendors/jqvmap/dist/maps/jquery.vmap.world.js"></script>-->
+
+</body>
+
+</html>

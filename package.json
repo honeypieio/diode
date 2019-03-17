@@ -1,0 +1,48 @@
+{
+  "name": "murakami",
+  "version": "2.0.0",
+  "description": "SHRUB Co-op's membership system",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/honeypieio/murakami"
+  },
+  "contributors": [
+    "Ross Hudson <hello@rosshudson.co.uk> (https://rosshudson.co.uk)"
+  ],
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "GPL-3.0",
+  "dependencies": {
+    "async": "^2.6.1",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.3",
+    "cloudinary": "^1.13.2",
+    "connect-flash": "*",
+    "cookie-parser": "*",
+    "cookie-session": "*",
+    "cors": "^2.8.5",
+    "cron": "^1.5.0",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "express-back": "*",
+    "express-fileupload": "^1.1.1-alpha.3",
+    "express-handlebars": "^3.0.0",
+    "express-recaptcha": "^4.1.1",
+    "express-validator": "^5.3.0",
+    "md5": "^2.2.1",
+    "moment": "^2.22.2",
+    "multer": "^1.4.1",
+    "multer-storage-cloudinary": "^2.2.1",
+    "mysql": "^2.16.0",
+    "nodemailer": "^4.7.0",
+    "nodemailer-html-to-text": "^2.1.0",
+    "passport": "*",
+    "passport-local": "*",
+    "path": "*",
+    "request": "^2.88.0",
+    "sanitize-html": "^1.20.0",
+    "sha1": "^1.1.1"
+  }
+}

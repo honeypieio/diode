@@ -1,0 +1,77 @@
+
+<div id="options"></div>
+
+<script>
+
+var categories = {}
+categories.options = {{{json categories}}}
+categories.parent = null
+
+updateOptions("categories.options");
+
+function updateOptions(path){
+
+  document.getElementById('options').innerHTML = "";
+
+	options = eval(path);
+	var markup = "";
+
+	for(let i=0;i<options.length;i++){
+
+		var option = options[i];
+
+		if(option.children && option.children.length > 0){
+			option.onclick =  "updateOptions('" + path + "[" + i + "].children" + "')";
+		} else {
+			option.onclick = "window.location = '{{public_address}}/items/register/" + option.category_id + "?organisation={{user.organisation.organisation_id}}'";
+		}
+		var wrapper, wrapperEnd = "";
+
+		if((i+1)%3 == 1){
+			markup = markup + '<div class="d-flex flex-md-row flex-column justify-content-center align-items-center p-4">';
+		}
+
+		markup = markup +
+
+
+                    '<div class="card text-center clickable category flex-item w-100 m-2" onclick="' + option.onclick + '">' +
+
+									       '<p class="align-middle p-3 mb-0">' + option.name + '</p>' +
+
+			      		    '</div>'
+
+
+		if((i+1)%3 == 0){
+			markup = markup + "</div>";
+		}
+
+
+		option.onclick = "";
+
+
+
+	}
+
+	document.getElementById('options').innerHTML = markup;
+
+	var parent = path.split(".")
+	parent.splice(-1, 1);
+	if(parent.length >= 2){
+
+		parent = parent.join(".");
+		parent = parent.slice(0, -3);
+
+		document.getElementById('options').innerHTML = document.getElementById('options').innerHTML +
+
+							'<div class="d-flex flex-row justify-content-center align-items-center p-4">' +
+                '<div class="card text-center clickable category-back mb-0 w-100"' + ' onclick="' +  "updateOptions('" + parent + "')" + '">' +
+
+                    '<p class="align-middle text-plain pt-2">← Back</p>' +
+
+								'</div>' +
+				      '</div>';
+	}
+
+}
+
+</script>

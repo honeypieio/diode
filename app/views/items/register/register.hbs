@@ -1,0 +1,159 @@
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+
+
+<form method="post" action="{{public_address}}/items/register/{{category.category_id}}">
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<div class="content">
+
+								<h5>
+									<span class="text-muted">
+										{{#each category.path}}
+											{{this}}
+											>
+										{{/each}}
+									</span>
+									{{category.name}}
+								</h5>
+
+							</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row mb-4">
+			{{#if category.imageRequired}}
+
+					<div class="col-md-4 mx-auto">
+
+						<img src="{{public_address}}/assets/img/image-upload-placeholder.png" id="item-image" />
+
+						<center>
+							<a id="upload_widget" class="btn btn-primary mx-auto" href="#">Upload Image</a>
+						</center>
+
+						<input name="item[image]" id="item-image-value" type="hidden">
+					</div>
+
+
+			{{/if}}
+			{{#if category.basicInfoRequired}}
+
+					<div class="col-md-4 mx-auto">
+						<div class="card">
+								<div class="card-body">
+
+									<h3 class="mb-2">Basic Details</h3>
+
+
+
+												<div class="form-group">
+											    <input type="text" class="form-control" name="item[description]" value="{{item.description}}"  placeholder="Short Description" required>
+											  </div>
+												<div class="form-group">
+											    <input type="text" class="form-control" name="item[brand]" value="{{item.brand}}" placeholder="Brand (optional)">
+											  </div>
+											  <div class="form-group">
+											    <input type="text" class="form-control" name="item[modelNo]" value="{{item.modelNo}}" placeholder="Model/Make Number (optional)">
+											  </div>
+												<div class="form-group">
+											    <input type="text" class="form-control" name="item[batchNo]" value="{{item.batchNo}}" placeholder="Batch/Serial Number (optional)">
+											  </div>
+
+
+			          </div>
+						</div>
+					</div>
+
+			{{/if}}
+			{{#ifCond category.additionalInfo.length '>' 0}}
+
+				<div class="col-md-4 mx-auto">
+					<div class="card">
+						<div class="content mt-3 mb-1">
+							{{#unless category.basicInfoRequired}}
+								<h3 class="mb-2">Basic Details</h3>
+							{{else}}
+								<h3 class="mb-2">Additional Details</h3>
+							{{/unless}}
+
+								<div class="row">
+									<div class="col-md-12">
+										{{> categories/additional-info additionalInfo=category.additionalInfo}}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+			{{/ifCond}}
+		</div>
+
+		<br />
+
+		<div class="row mt-4">
+			<div class="col-md-4 mx-auto">
+				<input type="submit" class="btn btn-block btn-lg btn-success" value="Complete Registration" />
+			</div>
+		</div>
+
+</form>
+
+<script type="text/javascript">
+
+var makeAjaxRequest = function(url, data, cb){
+	url = url + "?" + jQuery.param(data)
+	jQuery.ajax({
+			url: url,
+			type: "GET",
+			dataType: "json",
+			complete: () => {
+					console.log("request completed - " + url);
+			},
+			success: cb,
+			error: (xhr, status, error) => {
+					console.log(xhr, status, error);
+			}
+	});
+}
+
+var getSignature = function(cb, params) {
+	console.log(params);
+		makeAjaxRequest("{{public_address}}/api/get/cloudinary-signature", params,
+				(response) =>
+						cb(response.signature));
+}
+
+
+
+jQuery(document).ready(function(){
+	var myWidget = cloudinary.createUploadWidget({
+		cloud_name: "{{CLOUDINARY_CLOUD_NAME}}",
+		api_key: "{{CLOUDINARY_API_KEY}}",
+	  upload_signature: getSignature,
+		maxImageWidth: 1000,
+		maxImageHeight: 1000},
+
+		function(error, result) {
+			if(result.event == "success"){
+				console.log(result, result.info.secure_url);
+
+				jQuery("#item-image").attr("src", result.info.secure_url)
+				jQuery("#item-image-value").val(result.info.secure_url)
+				jQuery("#upload_widget").text("Change Image")
+			}
+		}
+	);
+	document.getElementById("upload_widget").addEventListener("click", function(){
+	    myWidget.open();
+	  }, false);
+})
+
+
+
+</script>

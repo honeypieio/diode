@@ -1,0 +1,166 @@
+
+<div class="row mb-5">
+	<div class="col-md-12">
+		<table data-classes="table table-bordered table-light" data-toggle="table">
+		<thead>
+			<th>ID</th>
+			<th class="hidden-xs hidden-sm">Category</th>
+			<th>Details</th>
+		</thead>
+		<tbody>
+
+			<tr>
+        <td>{{item.item_id}}</td>
+        <td>
+
+					{{lookup (lookup user.categories item.category_id) 'name'}}
+				</td>
+
+
+
+        <td>
+
+					{{#if item.image}}
+						<a href="{{item.image}}" target="_blank">
+							<img src="{{item.image}}" style="display: block; width: 200px; height: auto;" />
+						</a>
+						<br />
+					{{/if}}
+
+          {{#each item.details}}
+            <span>{{formToPlain @key}}: {{this}}</span>
+						<br />
+          {{/each}}
+        </td>
+			</tr>
+
+		</tbody>
+	</table>
+	</div>
+</div>
+
+
+
+{{#each item.proceduresRequired}}
+	{{#if @first}}
+
+	<h1 class="text-center mb-2">{{details.name}}</h1>
+	<p class="text-center mb-5">{{details.description}}</p>
+		{{#each tests}}
+			{{#if @first}}
+
+				<div class="row">
+					<div class="col-md-8 mx-auto">
+						<div class="card">
+							<div class="card-body mx-2">
+								<div class="content">
+									<h3 class="text-center mt-4" id="testCheck">{{details.check}}</h3>
+									{{#if details.additional}}
+										<span id="testAdditional">{{{details.additional}}}</span>
+									{{/if}}
+									<br />
+									<div class="d-flex flex-md-row flex-column justify-content-center align-items-center">
+
+
+											<div class="flex-item w-100 p-2">
+												<button class="btn btn-danger btn-block test-option" id="fail">Fail</button>
+											</div>
+											<div class="flex-item w-100 p-2{{#unless details.allowNA}} d-none{{/unless}}">
+												<button class="btn btn-secondary btn-block test-option" id="na">Not Applicable</button>
+											</div>
+											<div class="flex-item w-100 p-2">
+												<button class="btn btn-success btn-block test-option" id="pass">Pass</button>
+											</div>
+
+									</div>
+									<br />
+
+									<div class="row center-block text-center">
+										<div class="col-sm-8 form-group center-block mx-auto my-auto">
+											<textarea id="note" class="form-control" placeholder="Add a note (optional)"></textarea>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-6 mx-auto">
+											<br />
+											<a id="test-complete" href="#" class="btn btn-primary btn-lg btn-block d-none" onclick="completeTest('{{test_id}}')">Test Complete</a>
+										</div>
+									</div>
+
+									<br />
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{{/if}}
+		{{/each}}
+	{{/if}}
+{{/each}}
+
+<script>
+
+
+		var outcome;
+
+		jQuery(".test-option").click(function(event){
+			jQuery(".test-option").removeClass("selected-test-option");
+			$target = jQuery(event.target);
+			$target.addClass("selected-test-option");
+			$target.addClass($target.attr('id'));
+			jQuery("#test-complete").removeClass("d-none");
+			outcome = $target.attr('id');
+		})
+
+
+
+	function getNextTest(test){
+		outcome = null;
+		jQuery("#test-complete").addClass("d-none");
+		jQuery(".test-option").removeClass("selected-test-option");
+
+
+		if(test){
+			jQuery("#testCheck").html(test.details.check);
+			if(test.details.additional){
+				jQuery("#testAdditional").html(test.details.additional);
+			}
+
+			if(test.details.allowNA){
+				jQuery("#na").parent().removeClass("d-none")
+			} else {
+				jQuery("#na").parent().addClass("d-none")
+			}
+
+			jQuery("#test-complete").attr("onclick", "completeTest('" + test.test_id + "')")
+		} else {
+			location.reload();
+		}
+
+	}
+
+	function completeTest(test_id){
+		jQuery.ajax({
+			type: "POST",
+			url: "{{public_address}}/api/post/items/test/{{item.uid}}",
+			data: {
+				test: test_id,
+				outcome: outcome,
+				note: jQuery("#note").val()
+			},
+			success: function(response){
+
+				if(response.status == "ok") {
+					if(response.nextTest){
+						getNextTest(response.nextTest);
+					} else if(response.nextProcedure){
+						location.reload();
+					}
+				} else {
+					console.log(response.msg);
+				}
+			}
+		});
+	}
+</script>

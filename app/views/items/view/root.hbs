@@ -1,0 +1,63 @@
+
+<div class="row">
+	<div class="col-md-12">
+		<table data-classes="table table-bordered table-hover table-light" data-pagination="true" data-search="true" data-toggle="table" data-striped="true">
+		<thead>
+			<th data-sortable="true">ID</th>
+			<th data-sortable="true" class="hidden-xs hidden-sm">Category</th>
+			<th>Details</th>
+			<th>Status</th>
+      <th data-sortable="true">Last Update</th>
+      <th>Action</th>
+		</thead>
+		<tbody>
+		{{#each items}}
+
+			<tr>
+        <td>{{item_id}}</td>
+        <td>{{lookup (lookup ../user.categories category_id) 'name'}}</td>
+        <td>
+
+					{{#if image}}
+						<a href="{{image}}" target="_blank">
+							<img src="{{image}}" style="display: block; width: 200px; height: auto;" />
+						</a>
+						<br />
+					{{/if}}
+
+          {{#each details}}
+            <span>{{formToPlain @key}}: {{this}}</span>
+						<br />
+          {{/each}}
+        </td>
+				<td>
+          {{#ifCond status '==' 'fail'}}
+            <span class="text-danger">Failed</span>
+          {{/ifCond}}
+
+          {{#ifCond status '==' 'pass'}}
+            <span class="text-success">Passed</span>
+          {{/ifCond}}
+
+          {{#unless status}}
+  					Requires
+						{{#each proceduresRequired}}
+							{{#if @first}}
+								{{details.name}}
+							{{/if}}
+						{{/each}}
+          {{/unless}}
+				</td>
+        <td>
+          {{niceTimestamp lastUpdated}}
+        </td>
+        <td>
+          <a href="{{../public_address}}/items/view/{{uid}}" class="btn btn-block btn-primary">View Item</a>
+        </td>
+			</tr>
+
+		{{/each}}
+		</tbody>
+	</table>
+	</div>
+</div>
