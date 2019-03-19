@@ -107,7 +107,7 @@ Mail.sendInvite = function(first_name, last_name, email, token, callback) {
     .replace(/\|last_name\|/g, last_name);
   var message = {
     html: html,
-    from: "Diode <hi@diode.org.uk>",
+    from: "Diode <hello@diode.org.uk>",
     to: first_name + " " + last_name + " <" + email + ">",
     subject: "Invite To Join"
   };

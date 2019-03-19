@@ -85,30 +85,47 @@
                     </li>
 
 
-                    {{#ifUserClass user.class '["local-admin"]'}}
+                    {{#ifUserClass user.class '["local-admin", "global-admin"]'}}
                       <h3 class="menu-title">
-                        {{#ifCond user.organisations.length '==' '1'}}
-                          {{lookup (lookup (lookup user.allOrganisations user.organisations.[0]) 'details') 'title'}}
+                        {{#ifCond user.class '==' 'global-admin'}}
+                          Organisations
+                        {{else}}
+                          {{#ifCond user.organisations.length '==' '1'}}
+                            {{lookup (lookup (lookup user.allOrganisations user.organisations.[0]) 'details') 'title'}}
+                          {{/ifCond}}
+
+                          {{#ifCond user.organisations.length '>' '1'}}
+                            My Organisations
+                          {{/ifCond}}
                         {{/ifCond}}
 
-                        {{#ifCond user.organisations.length '>' '1'}}
-                          My Organisations
-                        {{/ifCond}}
                       </h3><!-- /.menu-title -->
 
-                      <li {{#if organisationsActive}}class="active"{{/if}}>
-                          <a href="{{public_address}}/organisations/view"> <i class="menu-icon fas fa-building"></i>
+                      {{#ifCond user.class '==' "local-admin"}}
 
-                            {{#ifCond user.organisations.length '==' '1'}}
-                              {{lookup (lookup (lookup user.allOrganisations user.organisations.[0]) 'details') 'title'}}
-                            {{/ifCond}}
+                        <li {{#if organisationsActive}}class="active"{{/if}}>
 
-                            {{#ifCond user.organisations.length '>' '1'}}
-                              My Organisations
-                            {{/ifCond}}
+                            <a href="{{public_address}}/organisations/view"> <i class="menu-icon fas fa-building"></i>
 
-                          </a>
-                      </li>
+                              {{#ifCond user.organisations.length '==' '1'}}
+                                {{lookup (lookup (lookup user.allOrganisations user.organisations.[0]) 'details') 'title'}}
+                              {{/ifCond}}
+
+                              {{#ifCond user.organisations.length '>' '1'}}
+                                My Organisations
+                              {{/ifCond}}
+
+                            </a>
+                        </li>
+                      {{else}}
+                        <li class="menu-item-has-children dropdown{{#if organisationsActive}} active{{/if}}">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fas fa-building"></i>Organisations</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fas fa-building"></i><a href="{{public_address}}/organisations">Manage Organisations</a></li>
+                                <li><i class="menu-icon far fa-plus-square"></i><a href="{{public_address}}/organisations/add">Add Organisation</a></li>
+                            </ul>
+                        </li>
+                      {{/ifCond}}
 
                       <li class="menu-item-has-children dropdown{{#if usersActive}} active{{/if}}">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fas fa-users"></i>Users</a>
@@ -117,7 +134,7 @@
                               <li><i class="menu-icon fas fa-user-plus"></i><a href="{{public_address}}/users/add">Add User</a></li>
                           </ul>
                       </li>
-
+                      {{/ifUserClass}}
                       <h3 class="menu-title">
                         My Account
                       </h3><!-- /.menu-title -->
@@ -130,7 +147,10 @@
                           <a href="{{public_address}}/support"> <i class="menu-icon far fa-question-circle"></i>Support</a>
                       </li>-->
 
-                    {{/ifUserClass}}
+
+
+
+
                     {{else}}
                       <li {{#if loginActive}}class="active"{{/if}}>
                           <a href="{{public_address}}/login"> <i class="menu-icon fa fa-user"></i>Login</a>
