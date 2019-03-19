@@ -1,0 +1,80 @@
+
+
+
+	<table data-classes="table table-bordered table-light" data-toggle="table">
+		<thead>
+			<th>Date</th>
+			<th>Action</th>
+			<th>User</th>
+      <th>Outcome</th>
+		</thead>
+		<tbody>
+
+      {{#each activity}}
+
+  			{{#ifCond action '==' "testing_complete"}}
+  				{{#unless @first}}
+  					<tr>
+  						<td colspan="4"></td>
+  					</tr>
+  				{{/unless}}
+  			{{/ifCond}}
+
+        {{#ifCond action '==' "procedure_complete"}}
+          {{#unless @first}}
+            <tr>
+              <td colspan="4"></td>
+            </tr>
+          {{/unless}}
+        {{/ifCond}}
+
+        {{#ifCond action '==' 'register'}}
+          {{#unless @first}}
+            <tr>
+              <td colspan="4"></td>
+            </tr>
+          {{/unless}}
+          <tr class="bg-grey">
+            <td>{{niceTimestamp timestamp}}</td>
+            <td>Item Registered</td>
+            <td>{{lookup (lookup ../users user_id) 'name'}}</td>
+            <td>-</td>
+
+          </tr>
+
+        {{else}}
+
+
+
+          <tr
+
+          {{#ifCond action '==' "procedure_complete"}}
+            class="bg-grey"
+          {{/ifCond}}
+
+					{{#ifCond action '==' "testing_complete"}}
+            class="bg-grey"
+          {{/ifCond}}
+
+          >
+            <td>{{niceTimestamp timestamp}}</td>
+            <td>
+              {{formToPlain action}}
+            </td>
+            <td>{{lookup (lookup ../users user_id) 'name'}}</td>
+            <td
+              {{#ifCond info.success '==' 'false'}}class="text-danger"{{/ifCond}}
+              {{#ifCond info.success '==' 'true'}}class="text-success"{{/ifCond}}>
+              {{#if info.success}}
+                Success
+              {{else}}
+                Fail
+              {{/if}}
+            </td>
+          </tr>
+
+        {{/ifCond}}
+
+      {{/each}}
+		</tbody>
+	</table>

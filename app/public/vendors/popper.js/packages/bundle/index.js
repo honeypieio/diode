@@ -105,8 +105,8 @@ function bundleWatch({ input, file, name, banner, miniBanner }) {
     },
   });
 
-  console.log('\x1Bc'); // reset console
-  console.log('Rollup is watching for changes...');
+   // reset console
+  
   watcher.on('event', event => {
     switch (event.code) {
       case 'START':

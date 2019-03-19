@@ -1,141 +1,78 @@
-<div class="row">
-  <h2>Add User</h2>
-</div>
+<script src="{{public_address}}/assets/js/bootstrap-select.min.js"></script>
+<link rel="stylesheet" href="{{public_address}}/assets/css/bootstrap-select.min.css" />
 
-<div class="container">
-  <form method="post" action="/users/add" class="form-group">
 
+<form method="post" action="{{public_address}}/users/add" class="form-group">
   <div class="row">
-    <div class="form-group form-inline">
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="First Name" name="first_name"{{#if first_name}} value="{{first_name}}"{{/if}}>
+    <div class="col-md-6 mx-auto">
+
+      <div class="alert alert-info mb-4 text-center" role="alert">
+        <span class="badge badge-pill badge-info align-middle">Info</span> Once you have filled out the user's details, they'll be sent an email with instructions on how to activate their account.
       </div>
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Last Name" name="last_name"{{#if last_name}} value="{{last_name}}"{{/if}}>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group col-sm-4" style="padding: 0;">
-      <input type="text" class="form-control" placeholder="Username" name="username"{{#if username}} value="{{username}}"{{/if}}>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group col-sm-4" style="padding: 0;">
-      <input type="email" class="form-control" placeholder="Email" name="email"{{#if email}} value="{{email}}"{{/if}}>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="form-group form-inline">
-      <div class="form-group">
-        <input type="password" class="form-control" placeholder="Password" name="password"{{#if password}} value="{{password}}"{{/if}}>
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-control" placeholder="Confirm password" name="passwordConfirm"{{#if passwordConfirm}} value="{{passwordConfirm}}"{{/if}}>
-      </div>
-    </div>
-  </div>
-
-  <div class="row">
-    <h4>Permissions</h4>
-  </div>
-
-  <div class="row">
-    <div class="form-group form-inline">
-      <select class="form-control" name="class">
-        <option value="till">Till User</option>
-        <!--<option value="volunteer">Volunteer Co-ordinator</option>
-        <option value="staff">Staff Member</option>-->
-        <option value="admin">Admin</option>
-      </select>
-    </div>
-  </div>
-  <div id="working_groups">
-    <div class="row">
-      <h4>Working Groups</h4>
-    </div>
-
-    <div class="row">
-      <div class="form-group form-inline">
-          <div class="form-group">
-            <select id="workingGroupSelect" class="form-control">
-              {{#each allWorkingGroups}}
-                <option value='{"{{group_id}}":"{{name}}"}'>{{name}}</option>
-              {{/each}}
-            </select>
-          </div>
-          <div class="form-group">
-              <a class="form-control btn btn-primary" onclick="addToJoinList()">Add</a>
-          </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div id="wgInfo">
-        <p>User will belong to:</p>
-      </div>
-      <ul id="workingGroupJoinSummary"></ul>
-    </div>
-    <input type="hidden" name="working_groups" id="working_groups_json" value="" />
-
-  </div>
 
 
-  <hr />
+      <div class="card p-4">
+        <div class="card-body">
 
-  <div class="row">
-    <div class="form-group form-inline">
-      <div class="form-group">
-          <button type="submit" class="btn btn-primary form-control">Add User</button>
+
+          <div class="row">
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group">
+                  <input type="text" name="first_name" class="form-control input-sm" placeholder="First Name" required>
+                </div>
+              </div>
+              <div class="col-xs-6 col-sm-6 col-md-6">
+                <div class="form-group">
+                  <input type="text" name="last_name" class="form-control input-sm" placeholder="Last Name" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <input type="email" name="email" class="form-control input-sm" placeholder="Email Address" required>
+            </div>
+
+            <div class="row">
+              {{#ifCond user.organisations.length '==' '1'}}
+
+              <p>Will belong to <b>{{lookup (lookup (lookup user.allOrganisations user.organisations.[0]) 'details') 'title'}}</b></p>
+              <input type="hidden" name="organisations" value="{{user.organisations.[0]}}" />
+              {{else}}
+              <div class="col-md-12">
+                <select class="selectpicker show-tick form-control" name="organisations" title="Select one or more organisations" data-style="btn-info" data-size="auto" data-header="Select one or more organisations" data-live-search="true" multiple required />
+                  {{#each user.organisations}}
+                    <option value="{{this}}">{{lookup (lookup (lookup ../user.allOrganisations this) 'details') 'title'}}</option>
+                  {{/each}}
+                </select>
+              </div>
+              {{/ifCond}}
+            </div>
+
+            <div class="row mt-3">
+
+              <div class="col-md-12">
+                <select class="form-control" name="class" required />
+                  <option value="tester">Tester</option>
+                  <option value="local-admin">Local Admin</option>
+                  {{#ifUserClass user.class '["global-admin"]'}}
+                    <option value="tester">Global Admin</option>
+                  {{/ifUserClass}}
+                </select>
+              </div>
+
+            </div>
+
         </div>
+      </div>
+
+
+      <div class="row">
+
+        <button type="submit" class="btn btn-success btn-block btn-lg">Invite User</button>
+
+      </div>
+
     </div>
   </div>
-
 
   </form>
-</div>
-
-
-<script>
-$("document").ready(function(){
-    if(document.getElementsByName("admin")[0].checked == true){
-        $("#working_groups").toggleClass("hidden");
-    }
-});
-
-var joinList = {{{json working_groups}}}
-
-function addToJoinList(){
-  var wg = JSON.parse($("#workingGroupSelect").val())
-  joinList[Object.keys(wg)[0]] = wg[Object.keys(wg)[0]];
-  updateSummary();
-}
-
-function removeFromJoinList(key){
-  delete joinList[key];
-  updateSummary();
-}
-
-function updateSummary(){
-
-  $("#working_groups_json").val(JSON.stringify(joinList));
-
-  if(Object.keys(joinList).length === 0 && joinList.constructor === Object){
-    $("#wgInfo").addClass("hidden")
-  } else {
-    $("#wgInfo").removeClass("hidden")
-  }
-
-  $("#workingGroupJoinSummary").html("");
-  Object.keys(joinList).forEach(function(key) {
-    $("#workingGroupJoinSummary").html($("#workingGroupJoinSummary").html() + "<li id='" + key + "'>" + joinList[key] + " - <a onclick='removeFromJoinList(\"" + key + "\")' class='clickable'>remove</a></li>");
-  });
-
-}
-
-updateSummary();
-
-</script>

@@ -1,5 +1,6 @@
 // /organisations/view
 var router = require("express").Router();
+var async = require("async");
 
 var rootDir = process.env.CWD;
 
@@ -22,13 +23,25 @@ router.get(
     ) {
       Items.getAllByOrganisationId(req.user, function(err, items) {
         Users.getByOrganisationId(req.user, function(err, users) {
-          res.render("organisations/view", {
-            title: "View Organisation",
-            organisationsActive: true,
-            organisation: req.user.allOrganisations[req.query.organisation],
-            items: items,
-            users: users
-          });
+          var activeUsers = [];
+          async.each(
+            users,
+            function(user, callback) {
+              if (user.deactivated == 0) {
+                activeUsers.push(user);
+              }
+              callback();
+            },
+            function() {
+              res.render("organisations/view", {
+                title: "View Organisation",
+                organisationsActive: true,
+                organisation: req.user.allOrganisations[req.query.organisation],
+                items: items,
+                users: activeUsers
+              });
+            }
+          );
         });
       });
     } else {

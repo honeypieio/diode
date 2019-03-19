@@ -1,4 +1,4 @@
-// /users/manage
+// /users/view
 
 var router = require("express").Router();
 var async = require("async");
@@ -17,19 +17,16 @@ router.get("/:user_id", Auth.isLoggedIn, function(req, res) {
         req.flash("error_msg", "User not found!");
         res.redirect("/users");
       } else {
-        if (user[0].deactivated == 0) {
-          Users.sanitizeUser(user[0], req.user, function(user) {
-            res.render("users/manage", {
-              title: "Manage User",
-              usersActive: true,
-              viewedUser: user,
-              allProcedures: procedures
-            });
+        Users.sanitizeUser(user[0], req.user, function(user) {
+          res.render("users/view", {
+            title: "View User",
+            usersActive: true,
+            viewedUser: user,
+
+            allProcedures: procedures,
+            hideOrganisationSelect: true
           });
-        } else {
-          req.flash("error", "User not found!");
-          res.redirect("/users");
-        }
+        });
       }
     });
   });

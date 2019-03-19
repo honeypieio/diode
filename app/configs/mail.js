@@ -91,29 +91,25 @@ Mail.sendAutomated = function(mail_id, member_id, callback) {
   });
 };
 
-Mail.sendUsers = function(to_name, to_address, subject, html, callback) {
-  html = sanitizeHtml(html);
-
+Mail.sendInvite = function(first_name, last_name, email, token, callback) {
+  var html = `<p>Hey |first_name|!</p>
+  <p>
+    You've been invited to join Diode. Follow the link below to to activate your
+    account. The link will expire in 24 hours.
+  </p>
+  <a href="|url|">|url|</a>`;
+  html = html
+    .replace(
+      /\|url\|/g,
+      process.env.PUBLIC_ADDRESS + "/invitation?token=" + token
+    )
+    .replace(/\|first_name\|/g, first_name)
+    .replace(/\|last_name\|/g, last_name);
   var message = {
     html: html,
-    from: "Murakami <support@murakami.org.uk>",
-    to: to_name + " <" + to_address + ">",
-    subject: subject
-  };
-
-  var transporter = nodemailer.createTransport(Mail.supportSmtpConfig);
-  transporter.use("compile", htmlToText());
-  transporter.sendMail(message, callback);
-};
-
-Mail.sendGeneral = function(to, subject, html, callback) {
-  html = sanitizeHtml(html);
-
-  var message = {
-    html: html,
-    from: "Shrub Co-op <shrub@murakami.org.uk>",
-    to: to,
-    subject: subject
+    from: "Diode <hi@diode.org.uk>",
+    to: first_name + " " + last_name + " <" + email + ">",
+    subject: "Invite To Join"
   };
 
   var transporter = nodemailer.createTransport(Mail.supportSmtpConfig);

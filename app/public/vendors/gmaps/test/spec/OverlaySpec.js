@@ -34,7 +34,7 @@ describe("Drawing HTML overlays", function() {
     beforeEach(function() {
       callbacks = {
         onclick: function() {
-          console.log('Clicked the overlay');
+          
         }
       };
 

@@ -24,6 +24,28 @@ Helpers.generateBase64Id = function(length) {
   return result;
 };
 
+Helpers.allBelongTo = function(selectedOptions, validOptions) {
+  if (Array.isArray(selectedOptions)) {
+    try {
+      var valid = true;
+      for (i = 0; i < selectedOptions.length; i++) {
+        if (!validOptions[validOptions.indexOf(selectedOptions[i])]) {
+          valid = false;
+        }
+      }
+      return valid;
+    } catch (err) {
+      return false;
+    }
+  } else {
+    if (validOptions[validOptions.indexOf(selectedOptions)]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
 Helpers.uniqueIntId = function(length, table, id_name, callback) {
   var query = "SELECT ?? FROM ?? WHERE ?? = ?";
   // Generate ID!
@@ -125,7 +147,7 @@ Helpers.flattenToIds = function(array, id, callback) {
 Helpers.flatten = function(array) {
   var result = {};
   array.forEach(function(a) {
-    result[a['category_id']] = a;
+    result[a["category_id"]] = a;
     if (Array.isArray(a.children)) {
       result = Object.assign(result, Helpers.flatten(a.children));
     }

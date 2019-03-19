@@ -1,0 +1,63 @@
+<div class="row ml-1">
+  <h4>{{viewedUser.name}}</h4>
+</div>
+
+<div class="row mb-1 ml-1">
+  <p class="text-muted">{{viewedUser.email}}</p>
+</div>
+
+<div class="row">
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mb-3">Account Details</h4>
+
+        <p class="mb-2">{{viewedUser.first_name}} is a <b>{{viewedUser.humanClass}}</b>,
+          and belongs to:
+        </p>
+        <div class="container">
+          <div class="container">
+            <ul>
+              {{#each viewedUser.organisations}}
+                <li>{{lookup (lookup (lookup ../user.allOrganisations this) 'details') 'title'}}</li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+
+        <a class="btn btn-primary btn-block" href="{{public_address}}/users/update/{{viewedUser.id}}">Update Account</a>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="mb-3">Training</h4>
+        {{#ifCond viewedUser.permissions.length '==' 0}}
+          <p class="mb-3">Not trained to test anything yet!</p>
+        {{else}}
+          <p class="mb-2">{{viewedUser.first_name}} is trained to:</p>
+          <div class="container">
+            <div class="container">
+              <ul>
+                {{#each viewedUser.permissions}}
+                  <li>
+                    {{lookup (lookup (lookup ../user.allProcedures this) 'details') 'name'}}
+                    <small class="text-muted">{{lookup (lookup (lookup ../user.allProcedures this) 'details') 'description'}}</small>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
+          </div>
+        {{/ifCond}}
+
+        <a class="btn btn-primary btn-block" href="{{public_address}}/users/training/{{viewedUser.id}}">Update Training</a>
+
+      </div>
+    </div>
+  </div>
+
+</div>

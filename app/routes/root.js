@@ -15,6 +15,7 @@ router.use("/login", require("./login"));
 router.use("/recover", require("./recover"));
 router.use("/logout", require("./logout"));
 router.use("/account", require("./account"));
+router.use("/invitation", require("./invitation"));
 
 router.get("*", function(req, res) {
   res.render("error", {

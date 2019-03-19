@@ -8,6 +8,8 @@ moment.locale("en-gb");
 var Helpers = require("../configs/helpful_functions");
 var Activity = require("./activity");
 
+var UserInvites = require("./user-invites");
+
 var Users = {};
 
 Users.getByUsername = function(username, callback) {
@@ -25,6 +27,30 @@ Users.getByUsernameOrEmail = function(email, callback) {
   var sql = mysql.format(query, inserts);
 
   con.query(sql, callback);
+};
+
+Users.updateTraining = function(
+  loggedInUser,
+  user_id,
+  oldTraining,
+  newTraining,
+  callback
+) {
+  var query = "UPDATE login SET permissions = ? WHERE id = ?";
+  var inserts = [JSON.stringify(newTraining), user_id];
+  var sql = mysql.format(query, inserts);
+
+  con.query(sql, function(err) {
+    Activity.trainingUpdated(
+      loggedInUser,
+      user_id,
+      oldTraining,
+      newTraining,
+      function() {
+        callback();
+      }
+    );
+  });
 };
 
 Users.getByEmail = function(email, callback) {
@@ -45,8 +71,7 @@ Users.getById = function(id, callback) {
 
 Users.getByOrganisationId = function(loggedInUser, callback) {
   var query = `SELECT * FROM login
-
-  WHERE organisations LIKE ?`;
+LEFT JOIN (SELECT user_id activity_user_id, MAX(timestamp) lastLogin FROM user_activity WHERE action='login' GROUP BY user_id) activity ON login.id=activity.activity_user_id WHERE organisations LIKE ? ORDER BY deactivated ASC, lastLogin DESC`;
   var inserts = ["%" + loggedInUser.organisation.organisation_id + "%"];
   var sql = mysql.format(query, inserts);
 
@@ -66,6 +91,15 @@ Users.getByOrganisationId = function(loggedInUser, callback) {
       }
     );
   });
+};
+
+Users.getActivity = function(user_id, callback) {
+  var query = `SELECT * FROM user_activity
+              WHERE user_id = ?
+              ORDER BY timestamp DESC`;
+  var inserts = [user_id];
+  var sql = mysql.format(query, inserts);
+  con.query(sql, callback);
 };
 
 Users.addPasswordReset = function(user_id, ip_address, callback) {
@@ -113,13 +147,16 @@ Users.updateWorkingGroups = function(user_id, working_groups, callback) {
   con.query(sql, callback);
 };
 
-Users.add = function(user, callback) {
+Users.add = function(user, loggedInUser, callback) {
   var query =
-    "INSERT INTO login (id, first_name, last_name, username, email, password, class, working_groups) VALUES (?,?,?,?,?,?,?,?)";
+    "INSERT INTO login (id, first_name, last_name, email, password, permissions, class, organisations, deactivated) VALUES (?,?,?,?,?,?,?,?,?)";
 
   // Generate ID!
-  Helpers.uniqueIntId(11, "login", "id", function(id) {
+  Helpers.uniqueBase64Id(15, "login", "id", function(id) {
     user.id = id;
+
+    user.password = Helpers.generateBase64Id(255);
+
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(user.password, salt, null, function(err, hash) {
         user.password = hash.replace(/^\$2y(.+)$/i, "$2a$1");
@@ -127,16 +164,19 @@ Users.add = function(user, callback) {
           user.id,
           user.first_name,
           user.last_name,
-          user.username,
           user.email,
           user.password,
+          "[]",
           user.class,
-          user.working_groups
+          JSON.stringify(user.organisations),
+          1
         ];
         var sql = mysql.format(query, inserts);
-
-        con.query(sql);
-        Users.getById(user.id, callback);
+        con.query(sql, function(err) {
+          UserInvites.create(loggedInUser, user, function(err) {
+            callback(err, user);
+          });
+        });
       });
     });
   });
@@ -158,7 +198,7 @@ Users.update = function(user, callback) {
 };
 
 Users.updatePassword = function(user_id, password, callback) {
-  var query = "UPDATE login SET password = ? WHERE id = ?";
+  var query = "UPDATE login SET password = ?, deactivated = 0 WHERE id = ?";
   bcrypt.genSalt(10, function(err, salt) {
     bcrypt.hash(password, salt, null, function(err, hash) {
       password = hash.replace(/^\$2y(.+)$/i, "$2a$1");
@@ -201,7 +241,16 @@ Users.sanitizeUser = function(user, loggedInUser, callback) {
   sanitizedUser.last_name = user.last_name;
   sanitizedUser.name = user.first_name + " " + user.last_name;
   sanitizedUser.email = user.email;
+  sanitizedUser.deactivated = user.deactivated;
   sanitizedUser.class = user.class;
+  if (user.class == "local-admin") {
+    sanitizedUser.humanClass = "local admin";
+  } else if (user.class == "global-admin") {
+    sanitizedUser.humanClass = "global admin";
+  } else {
+    sanitizedUser.humanClass = "tester";
+  }
+  sanitizedUser.lastLogin = user.lastLogin;
   sanitizedUser.permissions = JSON.parse(user.permissions);
   sanitizedUser.organisations = JSON.parse(user.organisations);
   callback(sanitizedUser);

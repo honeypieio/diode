@@ -35,7 +35,7 @@ zip.file("test/asserts/file.js", "...");
 zip.file("test/asserts/generate.js", "...");
 
 zip.folder("test").forEach(function (relativePath, file){
-    console.log("iterating over", relativePath);
+    
 });
 
 // will display:

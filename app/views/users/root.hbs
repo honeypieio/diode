@@ -4,7 +4,9 @@
 		<thead>
 			<th data-sortable="true">Name</th>
       <th data-sortable="true">Class</th>
+      <th data-sortable="true">Status</th>
       <th>Last Login</th>
+
 			<th>Action</th>
 		</thead>
 		<tbody>
@@ -14,22 +16,24 @@
 
         <td>{{name}}</td>
         <td>
-          {{#ifCond class '==' 'global-admin'}}
-            Global Admin
-          {{/ifCond}}
-
-          {{#ifCond class '==' 'local-admin'}}
-            Local Admin
-          {{/ifCond}}
-
-          {{#ifCond class '==' 'tester'}}
-            Tester
-          {{/ifCond}}
-
+          {{formToPlain humanClass}}
         </td>
-        <td>{{lastLogin}}</td>
+        <td>
+          {{#ifCond deactivated '==' 0}}
+            <span class="text-success">Active</span>
+          {{else}}
+            <span class="text-danger">Deactivated</span>
+          {{/ifCond}}
+        </td>
+        <td>
+          {{#if lastLogin}}
+            {{niceTimestamp lastLogin}}
+          {{else}}
+            Never
+          {{/if}}
+        </td>
 				<td>
-					<a class="btn btn-block btn-primary" href="{{public_address}}/users/manage/{{id}}">
+					<a class="btn btn-block btn-primary" href="{{public_address}}/users/view/{{id}}">
             View/Update
 					</a>
 				</td>

@@ -13,12 +13,10 @@ var Procedures = require(rootDir + "/app/models/procedures");
 
 router.get("/", Auth.isLoggedIn, function(req, res) {
   Items.getAll(req.user, function(err, items) {
-    Items.getAll(req.user, function(err, items) {
-      res.render("items/view/root", {
-        title: "View All Items",
-        viewItemsActive: true,
-        items: items
-      });
+    res.render("items/view/root", {
+      title: "View All Items",
+      viewItemsActive: true,
+      items: items
     });
   });
 });

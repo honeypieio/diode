@@ -183,7 +183,7 @@ zip.file("a.txt", "content", {
 zip.file("a/b/c/d.txt", "content", {
     createFolders: true // default value
 });
-console.log(zip.files);
+
 // will display:
 // - a/
 // - a/b/
@@ -194,7 +194,7 @@ console.log(zip.files);
 zip.file("a/b/c/d.txt", "content", {
     createFolders: false
 });
-console.log(zip.files);
+
 // will display:
 // - a/b/c/d.txt
 ```

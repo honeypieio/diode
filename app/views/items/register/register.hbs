@@ -113,17 +113,17 @@ var makeAjaxRequest = function(url, data, cb){
 			type: "GET",
 			dataType: "json",
 			complete: () => {
-					console.log("request completed - " + url);
+					
 			},
 			success: cb,
 			error: (xhr, status, error) => {
-					console.log(xhr, status, error);
+					
 			}
 	});
 }
 
 var getSignature = function(cb, params) {
-	console.log(params);
+	
 		makeAjaxRequest("{{public_address}}/api/get/cloudinary-signature", params,
 				(response) =>
 						cb(response.signature));
@@ -141,7 +141,7 @@ jQuery(document).ready(function(){
 
 		function(error, result) {
 			if(result.event == "success"){
-				console.log(result, result.info.secure_url);
+				
 
 				jQuery("#item-image").attr("src", result.info.secure_url)
 				jQuery("#item-image-value").val(result.info.secure_url)

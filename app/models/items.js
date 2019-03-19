@@ -137,9 +137,10 @@ Items.getAll = function(user, callback) {
 
     con.query(query, function(err, items) {
       if (!err && items) {
-        async.each(
+        var sanitizedItems = {};
+        async.eachOf(
           items,
-          function(item, callback) {
+          function(item, i, callback) {
             if (user.organisations.includes(item.organisation_id)) {
               if (
                 user.organisation == null ||
@@ -150,7 +151,7 @@ Items.getAll = function(user, callback) {
                   activityByUid[item.uid] || [],
                   user.categories,
                   function(sanitizedItem) {
-                    item = sanitizedItem;
+                    sanitizedItems[item.uid] = sanitizedItem;
                     callback();
                   }
                 );
@@ -162,7 +163,7 @@ Items.getAll = function(user, callback) {
             }
           },
           function() {
-            callback(null, items);
+            callback(null, sanitizedItems);
           }
         );
       }

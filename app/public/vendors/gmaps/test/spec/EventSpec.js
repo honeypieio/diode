@@ -41,22 +41,22 @@ describe("Creating event listeners", function() {
       callbacks_native = callbacks_native || {
         map : {
           onclick : function() {
-            console.log('callbacks_native.map.onclick');
+            
           }
         },
         marker : {
           onclick : function() {
-            console.log('callbacks_native.marker.onclick');
+            
           }
         },
         line : {
           onclick : function() {
-            console.log('callbacks_native.line.onclick');
+            
           }
         },
         polygon : {
           onclick : function() {
-            console.log('callbacks_native.polygon.onclick');
+            
           }
         }
       };
@@ -136,22 +136,22 @@ describe("Creating event listeners", function() {
     beforeEach(function() {
       callbacks_gmaps = {
         marker_added : function() {
-          console.log('callbacks_gmaps.marker_added called');
+          
         },
         marker_removed : function() {
-          console.log('callbacks_gmaps.marker_removed called');
+          
         },
         polyline_added : function() {
-          console.log('callbacks_gmaps.polyline_added called');
+          
         },
         polyline_removed : function() {
-          console.log('callbacks_gmaps.polyline_removed called');
+          
         },
         polygon_added : function() {
-          console.log('callbacks_gmaps.polygon_added called');
+          
         },
         polygon_removed : function() {
-          console.log('callbacks_gmaps.polygon_removed called');
+          
         }
       };
 

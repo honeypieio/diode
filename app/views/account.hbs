@@ -54,21 +54,25 @@
       <div class="card-body">
         <h4 class="mb-3">Training</h4>
 
-        <p class="mb-2">You're trained to:
+        {{#ifCond user.permissions.length '==' 0}}
+          <p class="mb-2">You're not trained to test anything yet!
         </p>
-        <div class="container">
+        {{else}}
+          <p class="mb-2">You're trained to:
+          </p>
           <div class="container">
-            <ul>
-              {{#each user.permissions}}
-                <li>
-                  {{lookup (lookup (lookup ../user.allProcedures this) 'details') 'name'}}
-                  <small class="text-muted">{{lookup (lookup (lookup ../user.allProcedures this) 'details') 'description'}}</small>
-                </li>
-              {{/each}}
-            </ul>
+            <div class="container">
+              <ul>
+                {{#each user.permissions}}
+                  <li>
+                    {{lookup (lookup (lookup ../user.allProcedures this) 'details') 'name'}}
+                    <small class="text-muted">{{lookup (lookup (lookup ../user.allProcedures this) 'details') 'description'}}</small>
+                  </li>
+                {{/each}}
+              </ul>
+            </div>
           </div>
-        </div>
-
+        {{/ifCond}}
       </div>
     </div>
   </div>

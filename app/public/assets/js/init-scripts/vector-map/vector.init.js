@@ -212,7 +212,7 @@ jQuery( document ).ready( function () {
             }
         },
         onRegionSelect: function ( event, code, region ) {
-            console.log( map.selectedRegions );
+            
         },
         onLabelShow: function ( event, label, code ) {
             if ( enabledRegions.indexOf( code ) === -1 ) {

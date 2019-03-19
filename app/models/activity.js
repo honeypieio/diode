@@ -35,6 +35,133 @@ Activity.loginSuccess = function(user_id, ip_address) {
   con.query(sql);
 };
 
+Activity.userAccountActivated = function(user_id, callback) {
+  var query =
+    "INSERT INTO user_activity (timestamp, user_id, action, info) VALUES (?,?,?,?)";
+
+  var inserts = [new Date(), user_id, "account_activated", "{}"];
+  var sql = mysql.format(query, inserts);
+
+  con.query(sql, callback);
+};
+
+Activity.userInvited = function(loggedInUser, user_id, callback) {
+  var query =
+    "INSERT INTO user_activity (timestamp, user_id, action, info) VALUES (?,?,?,?)";
+
+  var inserts = [
+    new Date(),
+    user_id,
+    "user_invited",
+    JSON.stringify({ invitedBy: loggedInUser.id })
+  ];
+  var sql = mysql.format(query, inserts);
+
+  con.query(sql, function(err) {
+    query =
+      "INSERT INTO user_activity (timestamp, user_id, action, info) VALUES (?,?,?,?)";
+
+    inserts = [
+      new Date(),
+      loggedInUser.id,
+      "invited_user",
+      JSON.stringify({ invited: user_id })
+    ];
+    sql = mysql.format(query, inserts);
+    con.query(sql, callback);
+  });
+};
+
+Activity.trainingUpdated = function(
+  loggedInUser,
+  user_id,
+  oldTraining,
+  newTraining,
+  callback
+) {
+  var revoked = [];
+  var granted = [];
+
+  
+
+  async.each(
+    newTraining,
+    function(procedure, callback) {
+      if (!oldTraining.includes(procedure)) {
+        granted.push(procedure);
+      }
+
+      callback();
+    },
+    function() {
+      async.each(
+        oldTraining,
+        function(procedure, callback) {
+          if (!newTraining.includes(procedure)) {
+            revoked.push(procedure);
+          }
+          callback();
+        },
+        function() {
+          if (revoked.length > 0) {
+            Activity.trainingRevoked(loggedInUser, user_id, revoked);
+          }
+
+          if (granted.length > 0) {
+            Activity.trainingGranted(loggedInUser, user_id, granted);
+          }
+
+          callback();
+        }
+      );
+    }
+  );
+};
+
+Activity.trainingRevoked = function(loggedInUser, user_id, revoked) {
+  var query =
+    "INSERT INTO user_activity (timestamp, user_id, action, info) VALUES (?,?,?,?)";
+  var inserts = [
+    new Date(),
+    user_id,
+    "training_revoked",
+    JSON.stringify({ procedures: revoked, revokedBy: loggedInUser.id })
+  ];
+  var sql = mysql.format(query, inserts);
+  con.query(sql, function(err) {
+    inserts = [
+      new Date(),
+      loggedInUser.id,
+      "revoked_training",
+      JSON.stringify({ procedures: revoked, user: user_id })
+    ];
+    sql = mysql.format(query, inserts);
+    con.query(sql);
+  });
+};
+
+Activity.trainingGranted = function(loggedInUser, user_id, granted) {
+  var query =
+    "INSERT INTO user_activity (timestamp, user_id, action, info) VALUES (?,?,?,?)";
+  var inserts = [
+    new Date(),
+    user_id,
+    "trained",
+    JSON.stringify({ procedures: granted, grantedBy: loggedInUser.id })
+  ];
+  var sql = mysql.format(query, inserts);
+  con.query(sql, function(err) {
+    inserts = [
+      new Date(),
+      loggedInUser.id,
+      "granted_training",
+      JSON.stringify({ procedures: granted, user: user_id })
+    ];
+    sql = mysql.format(query, inserts);
+    con.query(sql);
+  });
+};
+
 Activity.itemRegistered = function(uid, user_id, callback) {
   var query =
     "INSERT INTO item_activity (timestamp, uid, user_id, action, info) VALUES (?,?,?,?,?)";

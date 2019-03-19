@@ -37,7 +37,7 @@ describe("Creating a marker", function() {
     beforeEach(function() {
       callbacks = {
         onclick : function() {
-          console.log(this.title);
+          
         }
       };
 

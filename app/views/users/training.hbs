@@ -1,0 +1,57 @@
+<script src="{{public_address}}/assets/js/bootstrap-select.min.js"></script>
+<link rel="stylesheet" href="{{public_address}}/assets/css/bootstrap-select.min.css" />
+
+<div class="row">
+  <div class="col-md-6 mx-auto">
+
+    <div class="row ml-1">
+      <h4>{{viewedUser.name}}</h4>
+    </div>
+
+    <div class="row mb-1 ml-1">
+      <p class="text-muted">{{viewedUser.email}}</p>
+    </div>
+
+    <div class="row">
+
+      <div class="col-12">
+        <form action="{{public_address}}/users/training/{{viewedUser.id}}" method="post">
+          <div class="card">
+            <div class="card-body">
+              <select class="selectpicker show-tick form-control" name="training" title="Select what {{viewedUser.first_name}} is trained to do" data-style="btn-info" data-size="auto" data-header="Select what {{viewedUser.first_name}} is trained to do" data-live-search="true" multiple />
+                {{#each allProcedures}}
+                  <option value="{{procedure_id}}" {{#if (lookupArray ../viewedUser.permissions procedure_id)}}selected{{/if}}>{{details.name}}</option>
+                {{/each}}
+              </select>
+
+              <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" value="on" name="verification" id="verification" required>
+                <label class="form-check-label" for="verification" style="text-transform: none; font-size: 15px;">
+                  Please confirm that {{viewedUser.name}} is trained in the above procedures, to the best of your knowledge.
+                </label>
+              </div>
+
+            </div>
+          </div>
+          <div class="row mt-4">
+            <button id="submit-button" class="btn btn-lg btn-block btn-primary" disabled>Update Training</button>
+          </div>
+        </form>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script>
+jQuery(function ($) {
+  $("#verification").on("change", function(){
+    if($(this).is(":checked")){
+      $("#submit-button").removeAttr("disabled");
+    } else {
+      $("#submit-button").attr("disabled", "disabled")
+    }
+  })
+});
+</script>

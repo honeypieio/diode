@@ -146,7 +146,7 @@ var JSZip = require("jszip");
 
 var req = http.get(url.parse("http://localhost/.../file.zip"), function (res) {
   if (res.statusCode !== 200) {
-    console.log(res.statusCode);
+    
     // handle error
     return;
   }
@@ -167,7 +167,7 @@ var req = http.get(url.parse("http://localhost/.../file.zip"), function (res) {
     JSZip.loadAsync(buf).then(function (zip) {
       return zip.file("content.txt").async("string");
     }).then(function (text) {
-      console.log(text);
+      
     });
   });
 });
@@ -197,7 +197,7 @@ request({
   JSZip.loadAsync(body).then(function (zip) {
     return zip.file("content.txt").async("string");
   }).then(function () {
-    console.log(text);
+    
   });
 });
 ```

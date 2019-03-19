@@ -71,11 +71,11 @@ describe("Creating a map", function() {
           });
         },
         onzoomchanged : function() {
-          console.log('onzoomchanged');
+          
           current_zoom = this.getZoom();
         },
         oncenterchanged : function() {
-          console.log('oncenterchanged');
+          
           current_center = this.getCenter();
         }
       };

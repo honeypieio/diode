@@ -52,7 +52,7 @@ describe("Create a Street View Panorama", function() {
     beforeEach(function() {
       callbacks = {
         onpovchanged : function() {
-          console.log(this);
+          
         }
       };
 

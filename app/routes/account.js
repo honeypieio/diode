@@ -9,7 +9,8 @@ var Items = require(rootDir + "/app/models/items");
 
 var Auth = require(rootDir + "/app/configs/auth");
 
-router.get("/", function(req, res) {
+router.get("/", Auth.isLoggedIn, function(req, res) {
+  var organisation = req.user.organisation;
   req.user.organisation = null;
   Items.getAll(req.user, function(err, items) {
     var sanitizedItems = [];
@@ -25,6 +26,7 @@ router.get("/", function(req, res) {
         callback();
       },
       function() {
+        req.user.organisation = organisation;
         res.render("account", {
           title: "My Account",
           accountActive: true,

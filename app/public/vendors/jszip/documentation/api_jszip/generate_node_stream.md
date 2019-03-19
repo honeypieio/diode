@@ -31,6 +31,6 @@ zip
 .on('finish', function () {
     // JSZip generates a readable stream with a "end" event,
     // but is piped here in a writable stream which emits a "finish" event.
-    console.log("out.zip written.");
+    
 });
 ```
