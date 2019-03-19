@@ -37,7 +37,13 @@
           <tr class="bg-grey">
             <td>{{niceTimestamp timestamp}}</td>
             <td>Item Registered</td>
-            <td>{{lookup (lookup ../users user_id) 'name'}}</td>
+            <td>
+							{{#if (lookup ../users user_id)}}
+								{{lookup (lookup ../users user_id) 'name'}}
+							{{else}}
+								Unknown
+							{{/if}}
+						</td>
             <td>-</td>
 
           </tr>

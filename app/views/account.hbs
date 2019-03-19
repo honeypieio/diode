@@ -1,6 +1,6 @@
 <div class="row mb-4 ml-1">
 
-  <h4>Welcome, back {{user.first_name}}!</h4>
+  <h4>Welcome back, {{user.first_name}}!</h4>
 
 </div>
 
@@ -16,7 +16,7 @@
         {{/ifCond}}
         {{#ifCond items.length '==' 1}}
           <h4 class="mb-3 text-center">There is currently <b>1</b> item for you to test</h4>
-          <a href="{{public_address}}/items/test/{{items.0.uid}}" class="btn btn-block btn-primary ">Start Testing!</a>
+          <a href="{{public_address}}/items/test" class="btn btn-block btn-primary ">Start Testing!</a>
         {{/ifCond}}
         {{#ifCond items.length '>' 1}}
           <h4 class="mb-3 text-center">There are currently <b>{{items.length}}</b> items for you to test</h4>
