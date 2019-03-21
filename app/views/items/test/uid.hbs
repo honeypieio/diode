@@ -152,13 +152,14 @@
 			success: function(response){
 
 				if(response.status == "ok") {
+					jQuery("#note").val("")
 					if(response.nextTest){
 						getNextTest(response.nextTest);
 					} else if(response.nextProcedure){
 						location.reload();
 					}
 				} else {
-					
+
 				}
 			}
 		});

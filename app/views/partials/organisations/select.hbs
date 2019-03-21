@@ -5,7 +5,7 @@
       <select id="organisationsSelect" class="form-control">
         {{#ifCond user.class '==' 'global-admin'}}
           {{#each user.allOrganisations}}
-            <option value="{{organisation_id}}">{{details.title}}</option>
+            <option value="{{organisation_id}}"{{#ifCond (lookup ../user.organisation 'organisation_id') '==' (lookup (lookup ../user.allOrganisations this) 'organisation_id')}} selected{{/ifCond}}>{{details.title}}</option>
           {{/each}}
         {{else}}
           {{#each user.organisations}}
