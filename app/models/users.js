@@ -184,12 +184,12 @@ Users.add = function(user, loggedInUser, callback) {
 
 Users.update = function(user, callback) {
   var query =
-    "UPDATE login SET first_name = ?, last_name = ?, class = ?, working_groups = ? WHERE id = ?";
+    "UPDATE login SET first_name = ?, last_name = ?, class = ?, organisations = ? WHERE id = ?";
   var inserts = [
     user.first_name,
     user.last_name,
     user.class,
-    user.working_groups,
+    JSON.stringify(user.organisations),
     user.user_id
   ];
   var sql = mysql.format(query, inserts);
@@ -253,6 +253,18 @@ Users.sanitizeUser = function(user, loggedInUser, callback) {
   sanitizedUser.lastLogin = user.lastLogin;
   sanitizedUser.permissions = JSON.parse(user.permissions);
   sanitizedUser.organisations = JSON.parse(user.organisations);
+
+  if (
+    loggedInUser.class == "global-admin" ||
+    (loggedInUser.class == "local-admin" &&
+      Helpers.hasOneInCommon(loggedInUser.organisations, user.organisations) &&
+      user.class != "global-admin")
+  ) {
+    sanitizedUser.canUpdate = true;
+  } else {
+    sanitizedUser.canUpdate = false;
+  }
+
   callback(sanitizedUser);
 };
 
