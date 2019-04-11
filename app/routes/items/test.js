@@ -28,7 +28,8 @@ router.get("/", Auth.isLoggedIn, function(req, res) {
         res.render("items/test/root", {
           title: "Select Test Item",
           testItemActive: true,
-          items: sanitizedItems
+          items: sanitizedItems,
+          showAllImages: req.query.showAllImages || false
         });
       }
     );

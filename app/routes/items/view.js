@@ -16,7 +16,8 @@ router.get("/", Auth.isLoggedIn, function(req, res) {
     res.render("items/view/root", {
       title: "View All Items",
       viewItemsActive: true,
-      items: items
+      items: items,
+      showAllImages: req.query.showAllImages || false
     });
   });
 });

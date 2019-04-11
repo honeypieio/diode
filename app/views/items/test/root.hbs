@@ -1,4 +1,11 @@
 {{#ifCond items.length '>' 0}}
+
+	{{#if showAllImages}}
+		<a class="btn btn-primary" href="#" onclick="toggleImages('hide');">Hide Images</a>
+	{{else}}
+		<a class="btn btn-primary" href="#" onclick="toggleImages('show');">Show All Images</a>
+	{{/if}}
+
 	<div class="row">
 		<div class="col-md-12">
 			<table data-classes="table table-bordered table-hover table-light" data-pagination="true" data-search="true" data-toggle="table" data-striped="true">
@@ -19,10 +26,15 @@
 						<td>
 
 							{{#if image}}
-								<a href="{{image}}" target="_blank">
-									<img src="{{image}}" style="display: block; width: 200px; height: auto;" />
-								</a>
-								<br />
+									<a href="{{image}}" target="_blank">
+										<img src="{{image}}" id="{{uid}}" style="{{#if ../showAllImages}}display: block;{{else}}display:none;{{/if}} width: 200px; height: auto;" />
+									</a>
+								{{#unless ../showAllImages}}
+									<a class="btn btn-primary mb-2" href="javascript:void(0);" onclick="jQuery('#{{uid}}').css('display', 'block'); jQuery(this).remove();">View Image</a>
+								{{/unless}}
+
+									<br />
+
 							{{/if}}
 
 							{{#each details}}
@@ -51,6 +63,18 @@
 		</table>
 		</div>
 	</div>
+
+	<script>
+	function toggleImages(state){
+		var href = new URL(window.location.href);
+		if(state == "hide"){
+			href.searchParams.set('showAllImages', '');
+		} else {
+			href.searchParams.set('showAllImages', 'on');
+		}
+		window.location.href = href;
+	}
+	</script>
 
 {{else}}
 
