@@ -1,23 +1,26 @@
-{{#if errors}}
-  <div class="alert alert-danger">{{{errors.0.msg}}}</div>
-{{/if}}
+<div class="row">
+	<div class="col-md-4 mx-auto">
+			<div class="card">
+					<div class="card-body">
 
-<center>
-	<h2>Account Recovery</h2>
-</center>
+            <h3 class="text-center mb-3">Account Recovery</h3>
 
-<hr />
 
-<form action="/recover" method="post">
-    <div class="form-group">
-    	<input type="text" class="form-control" name="username" placeholder="Username">
-  	</div>
 
-  	<div class="form-group">
-  		<button class="btn-block btn-shrub" type="submit">Recover Account</button>
+            <form action="/recover" method="post">
+                <div class="form-group">
+                	<input type="text" class="form-control" name="email" placeholder="Email">
+              	</div>
+
+              	<div class="form-group">
+              		<button class="btn btn-block btn-primary" type="submit">Recover Account</button>
+            	</div>
+            </form>
+
+
+            <a href="/">← Back to login</a>
+
+          </div>
+			</div>
 	</div>
-</form>
-
-<p>
-	<a href="/">← Back to login</a>
-</p>
+</div>

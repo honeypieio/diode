@@ -33,7 +33,14 @@ Organisations.getById = function(organisation_id, callback) {
   var query = "SELECT * FROM organisations WHERE organisation_id = ?";
   var inserts = [organisation_id];
   var sql = mysql.format(query, inserts);
-  con.query(sql, callback);
+  con.query(sql, function(err, organisation) {
+    if (organisation[0]) {
+      organisation[0].details = JSON.parse(organisation[0].details);
+      callback(err, organisation[0]);
+    } else {
+      callback(err, null);
+    }
+  });
 };
 
 Organisations.update = function(organisation, callback) {

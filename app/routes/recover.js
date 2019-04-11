@@ -9,14 +9,8 @@ var Users = require(rootDir + "/app/models/users");
 var Mail = require(rootDir + "/app/configs/mail");
 
 router.get("/", function(req, res) {
-  Settings.getAll(function(err, settings) {
-    if (settings[0].password_reset == 1) {
-      res.render("recover", {
-        title: "Account Recovery"
-      });
-    } else {
-      res.redirect("/");
-    }
+  res.render("recover", {
+    title: "Account Recovery"
   });
 });
 
@@ -31,7 +25,7 @@ router.get("/:reset_code", function(req, res) {
         reset_code: req.params.reset_code
       });
     } else {
-      res.redirect("/");
+      res.redirect(process.env.PUBLIC_ADDRESS + "/");
     }
   });
 });
@@ -42,7 +36,7 @@ router.post("/:reset_code", function(req, res) {
     resets
   ) {
     if (resets[0]) {
-      var password = req.body.password;
+      var password = req.body.password || false;
 
       req.checkBody("password", "Please enter a password").notEmpty();
       req
@@ -58,21 +52,37 @@ router.post("/:reset_code", function(req, res) {
           .equals(req.body.passwordConfirm);
       }
 
+      if (!password.match(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)) {
+        req
+          .assert(
+            "password",
+            "Please enter a password that meets the requirements!"
+          )
+          .equals(false);
+      }
+
       req
         .asyncValidationErrors()
         .then(function() {
           Users.updatePassword(resets[0].user_id, password, function(err) {
             if (err) {
+              console.log(err);
               req.flash("error_msg", "Something went wrong!");
-              res.redirect("/recover/" + resets[0].reset_code);
+              res.redirect(
+                process.env.PUBLIC_ADDRESS + "/recover/" + resets[0].reset_code
+              );
             } else {
               Users.setResetCodeAsUsed(resets[0].reset_code, function(err) {
                 if (err) {
                   req.flash("error_msg", "Something went wrong!");
-                  res.redirect("/recover/" + resets[0].reset_code);
+                  res.redirect(
+                    process.env.PUBLIC_ADDRESS +
+                      "/recover/" +
+                      resets[0].reset_code
+                  );
                 } else {
                   req.flash("success_msg", "Password reset!");
-                  res.redirect("/login");
+                  res.redirect(process.env.PUBLIC_ADDRESS + "/login");
                 }
               });
             }
@@ -82,112 +92,95 @@ router.post("/:reset_code", function(req, res) {
           res.render("reset", {
             errors: errors,
             title: "Account Recovery",
-            reset_code: resets[0].reset_code
+            reset_code: req.params.reset_code
           });
         });
     } else {
-      res.redirect("/");
+      res.redirect(process.env.PUBLIC_ADDRESS + "/");
     }
   });
 });
 
 router.post("/", function(req, res) {
-  Settings.getAll(function(err, settings) {
-    if (settings[0].password_reset == 1) {
-      var username = req.body.username.trim();
-      req.checkBody("username", "Please enter a username").notEmpty();
+  var email = req.body.email;
+  req.checkBody("email", "Please enter your email address").notEmpty();
 
-      req
-        .asyncValidationErrors()
-        .then(function() {
-          Users.getByUsername(username, function(err, user) {
-            if (err || !user[0]) {
-              req.flash("error_msg", "Couldn't find that user!");
-              res.redirect("/recover");
-            } else {
-              Users.getUnusedPasswordResetsByUserId(user[0].id, function(
-                err,
-                resets
-              ) {
-                if (!resets[0]) {
-                  Users.addPasswordReset(
-                    user[0].id,
-                    req.headers["x-forwarded-for"] ||
-                      req.connection.remoteAddress,
-                    function(err) {
-                      if (err) {
-                        req.flash("error_msg", "Something went wrong!");
-                        res.redirect("/recover");
-                      } else {
-                        Users.getUnusedPasswordResetsByUserId(
-                          user[0].id,
-                          function(err, resets) {
-                            if (err) {
-                              req.flash("error_msg", "Something went wrong!");
-                              res.redirect("/recover");
-                            } else {
-                              var name =
-                                user[0].first_name + " " + user[0].last_name;
-                              var email = user[0].email;
-                              var subject = "Account Recovery";
-                              var html =
-                                "<h1>Hey " +
-                                user[0].first_name +
-                                "!</h1>" +
-                                "<p>Recover your account <a href='https://murakami.org.uk/recover/" +
-                                resets[0].reset_code +
-                                "'>here</a>. This link will expire in one hour.</p>" +
-                                "<p>From Murakami</p>";
-                              Mail.sendUsers(
-                                name,
-                                email,
-                                subject,
-                                html,
-                                function(err) {
-                                  if (err) {
-                                    req.flash(
-                                      "error_msg",
-                                      'Something went wrong sending you your recovery link, please <a href="/support">contact support</a>'
-                                    );
-                                    res.redirect("/recover");
-                                  } else {
-                                    req.flash(
-                                      "success_msg",
-                                      "An email with recovery instructions has been sent!"
-                                    );
-                                    res.redirect("/recover");
-                                  }
-                                }
-                              );
-                            }
-                          }
-                        );
+  req
+    .asyncValidationErrors()
+    .then(function() {
+      Users.getByEmail(email, function(err, user) {
+        if (err || !user[0]) {
+          req.flash("error_msg", "Email not recognised!");
+          res.redirect(process.env.PUBLIC_ADDRESS + "/recover");
+        } else {
+          Users.getUnusedPasswordResetsByUserId(user[0].id, function(
+            err,
+            resets
+          ) {
+            if (resets.length <= 5) {
+              Users.addPasswordReset(
+                user[0].id,
+                req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+                function(err, token) {
+                  if (err) {
+                    console.log(err);
+                    req.flash("error_msg", "Something went wrong!");
+                    res.redirect(process.env.PUBLIC_ADDRESS + "/recover");
+                  } else {
+                    var subject = "Account Recovery";
+                    var html =
+                      "<p>Hi " +
+                      user[0].first_name +
+                      ",</p>" +
+                      "<p>Follow the link below to to recover your account. The link will expire in 60 minutes." +
+                      "<p>" +
+                      process.env.PUBLIC_ADDRESS +
+                      "/recover/" +
+                      token +
+                      "</p>";
+                    Mail.sendUsers(
+                      user[0].first_name,
+                      user[0].last_name,
+                      user[0].email,
+                      subject,
+                      html,
+                      function(err) {
+                        if (err) {
+                          req.flash(
+                            "error_msg",
+                            'Something went wrong sending you your recovery link, please <a href="' +
+                              process.env.PUBLIC_ADDRESS +
+                              '/support">contact support</a>'
+                          );
+                          res.redirect(process.env.PUBLIC_ADDRESS + "/recover");
+                        } else {
+                          req.flash(
+                            "success_msg",
+                            "An email with recovery instructions has been sent!"
+                          );
+                          res.redirect(process.env.PUBLIC_ADDRESS + "/recover");
+                        }
                       }
-                    }
-                  );
-                } else {
-                  req.flash(
-                    "error_msg",
-                    "Account recovery process has already been initiated for this user!"
-                  );
-                  res.redirect("/recover");
+                    );
+                  }
                 }
-              });
+              );
+            } else {
+              req.flash(
+                "error_msg",
+                "You've tried to reset your password too many times! Please wait 60 minutes and try again."
+              );
+              res.redirect(process.env.PUBLIC_ADDRESS + "/recover");
             }
           });
-        })
-        .catch(function(errors) {
-          Settings.getAll(function(err, settings) {
-            res.render("recover", {
-              errors: errors,
-              settings: settings[0]
-            });
-          });
-        });
-    } else {
-      res.redirect("/");
-    }
-  });
+        }
+      });
+    })
+    .catch(function(errors) {
+      res.render("recover", {
+        errors: errors
+      });
+    });
 });
 
 module.exports = router;

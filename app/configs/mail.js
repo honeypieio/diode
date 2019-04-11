@@ -117,4 +117,24 @@ Mail.sendInvite = function(first_name, last_name, email, token, callback) {
   transporter.sendMail(message, callback);
 };
 
+Mail.sendUsers = function(
+  first_name,
+  last_name,
+  email,
+  subject,
+  html,
+  callback
+) {
+  var message = {
+    html: html,
+    from: "Diode <hello@diode.org.uk>",
+    to: first_name + " " + last_name + " <" + email + ">",
+    subject: subject
+  };
+
+  var transporter = nodemailer.createTransport(Mail.supportSmtpConfig);
+  transporter.use("compile", htmlToText());
+  transporter.sendMail(message, callback);
+};
+
 module.exports = Mail;

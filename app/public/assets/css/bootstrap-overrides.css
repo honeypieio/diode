@@ -77,11 +77,11 @@ label {
 }
 
 a {
-  color: blue;
+  color: #5eaecc;
 }
 
 a:hover {
-  color: blue;
+  color: #5eaecc;
   text-decoration: underline;
 }
 @media (min-width: 576px) {

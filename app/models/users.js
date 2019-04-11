@@ -104,36 +104,31 @@ Users.getActivity = function(user_id, callback) {
 
 Users.addPasswordReset = function(user_id, ip_address, callback) {
   var query =
-    "INSERT INTO password_reset (user_id, ip_address, reset_code, date_issued, used) VALUES (?,?,?,?,?)";
-  Helpers.uniqueBase64Id(25, "password_reset", "reset_code", function(id) {
+    "INSERT INTO password_resets (user_id, token, timestamp, used) VALUES (?,?,?,?)";
+  Helpers.uniqueBase64Id(25, "password_resets", "token", function(id) {
     var dt = new Date();
-    var inserts = [
-      user_id,
-      ip_address,
-      id,
-      new Date(dt.setMonth(dt.getMonth())),
-      0
-    ];
+    var inserts = [user_id, id, new Date(), 0];
     var sql = mysql.format(query, inserts);
 
-    con.query(sql);
-    Users.getById(user_id, callback);
+    con.query(sql, function(err) {
+      callback(err, id);
+    });
   });
 };
 
 Users.getUnusedPasswordResetsByUserId = function(user_id, callback) {
   var query =
-    "SELECT * FROM password_reset WHERE user_id = ? AND used = 0 AND date_issued > (now() - interval 60 minute)";
+    "SELECT * FROM password_resets WHERE user_id = ? AND used = 0 AND timestamp > (now() - interval 60 minute)";
   var inserts = [user_id];
   var sql = mysql.format(query, inserts);
 
   con.query(sql, callback);
 };
 
-Users.getUnusedPasswordResetsByResetCode = function(reset_code, callback) {
+Users.getUnusedPasswordResetsByResetCode = function(token, callback) {
   var query =
-    "SELECT * FROM password_reset WHERE reset_code = ? AND used = 0 AND date_issued > (now() - interval 60 minute)";
-  var inserts = [reset_code];
+    "SELECT * FROM password_resets WHERE token = ? AND used = 0 AND timestamp > (now() - interval 60 minute)";
+  var inserts = [token];
   var sql = mysql.format(query, inserts);
 
   con.query(sql, callback);
@@ -218,9 +213,9 @@ Users.deactivate = function(user_id, callback) {
   con.query(sql, callback);
 };
 
-Users.setResetCodeAsUsed = function(reset_code, callback) {
-  var query = "UPDATE password_reset SET used = 1 WHERE reset_code = ?";
-  var inserts = [reset_code];
+Users.setResetCodeAsUsed = function(token, callback) {
+  var query = "UPDATE password_resets SET used = 1 WHERE token = ?";
+  var inserts = [token];
   var sql = mysql.format(query, inserts);
 
   con.query(sql, callback);

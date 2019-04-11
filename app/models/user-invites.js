@@ -22,15 +22,12 @@ UserInvites.create = function(loggedInUser, user, callback) {
           user.email,
           token,
           function(err) {
-            
             Activity.userInvited(loggedInUser, user.id, function(err) {
-              
               callback(null, { id: user.id });
             });
           }
         );
       } else {
-        
         callback(
           "Something went wrong - please use the account recovery button!",
           { id: user.id }
@@ -51,6 +48,17 @@ UserInvites.getByToken = function(token, callback) {
     } else {
       callback(err, null);
     }
+  });
+};
+
+UserInvites.getByUserId = function(user_id, callback) {
+  var query =
+    "SELECT * FROM user_invites WHERE user_id = ? AND timestamp > (now() - interval 24 hour)";
+  var inserts = [user_id];
+  var sql = mysql.format(query, inserts);
+
+  con.query(sql, function(err, invites) {
+    callback(err, invites);
   });
 };
 

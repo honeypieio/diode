@@ -2,9 +2,19 @@
   <h4>{{viewedUser.name}}</h4>
 </div>
 
-<div class="row mb-1 ml-1">
+<div class="row ml-1">
   <p class="text-muted">{{viewedUser.email}}</p>
 </div>
+
+{{#if viewedUser.deactivated}}
+  {{#ifUserClass user.class '["local-admin", "global-admin"]'}}
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <a class="btn btn-block btn-primary" href="{{public_address}}/api/get/users/resend-activation-link/{{viewedUser.id}}">Resend Activation Link</a>
+      </div>
+    </div>
+  {{/ifUserClass}}
+{{/if}}
 
 <div class="row">
 

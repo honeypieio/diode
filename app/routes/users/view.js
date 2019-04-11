@@ -22,7 +22,6 @@ router.get("/:user_id", Auth.isLoggedIn, function(req, res) {
             title: "View User",
             usersActive: true,
             viewedUser: user,
-
             allProcedures: procedures,
             hideOrganisationSelect: true
           });

@@ -76,3 +76,22 @@
   </div>
 
   </form>
+
+<script>
+
+jQuery(function($){
+  $("#email").on("input", function(){
+    $.ajax({
+      type:"post",
+      url:"{{public_address}}/api/post/users/existence",
+      data: {
+        email: this.value
+      },
+      success: function(response){
+        console.log(response);
+      }
+    })
+  })
+})
+
+</script>
