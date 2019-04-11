@@ -18,7 +18,6 @@ router.get(
     Users.getById(req.params.user_id, function(err, user) {
       if (!err && user[0]) {
         user = user[0];
-        console.log(req.user.organisations, user.organisations);
         if (
           req.user.class == "global-admin" ||
           (req.user.class == "local-admin" &&

@@ -141,34 +141,42 @@ app.use(function(req, res, next) {
         req.user.categories = categoriesObj;
         Organisations.getAll(function(err, organisations) {
           req.user.allOrganisations = organisations;
-          async.eachOf(
-            req.user.organisations,
-            function(organisation, i, callback) {
-              if (!organisations[organisation]) {
-                req.user.organisations.splice(i, 1);
-              }
-              callback();
-            },
-            function() {
-              if (req.user.organisations.length > 0) {
-                if (
-                  req.query.organisation &&
-                  req.user.organisations.includes(req.query.organisation)
-                ) {
-                  req.user.organisation = organisations[req.query.organisation];
-                } else {
-                  req.user.organisation =
-                    organisations[req.user.organisations[0]];
-                }
-              } else {
-                req.user.organisation = null;
-              }
+          req.user.name = req.user.first_name + " " + req.user.last_name;
+          res.locals.user = req.user;
 
-              req.user.name = req.user.first_name + " " + req.user.last_name;
-              res.locals.user = req.user;
-              next();
-            }
-          );
+          if (req.user.class != "global-admin") {
+            async.eachOf(
+              req.user.organisations,
+              function(organisation, i, callback) {
+                if (!organisations[organisation]) {
+                  req.user.organisations.splice(i, 1);
+                }
+                callback();
+              },
+              function() {
+                if (req.user.organisations.length > 0) {
+                  if (
+                    req.query.organisation &&
+                    req.user.organisations.includes(req.query.organisation)
+                  ) {
+                    req.user.organisation =
+                      organisations[req.query.organisation];
+                  } else {
+                    req.user.organisation =
+                      organisations[req.user.organisations[0]];
+                  }
+                } else {
+                  req.user.organisation = null;
+                }
+                next();
+              }
+            );
+          } else {
+            req.user.organisation =
+              organisations[req.query.organisation] ||
+              organisations[Object.keys(organisations)[0]];
+            next();
+          }
         });
       });
     }

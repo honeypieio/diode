@@ -16,6 +16,7 @@ router.get(
   Auth.isLoggedIn,
   Auth.isOfClass(["global-admin", "local-admin"]),
   function(req, res) {
+    console.log(req.user);
     if (
       req.user.class == "global-admin" ||
       (req.user.class == "local-admin" &&

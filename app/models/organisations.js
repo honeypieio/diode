@@ -53,4 +53,18 @@ Organisations.update = function(organisation, callback) {
   con.query(sql, callback);
 };
 
+Organisations.add = function(organisation, callback) {
+  var query =
+    "INSERT INTO organisations (organisation_id, details, preferences) VALUES (?,?,?)";
+  Helpers.uniqueBase64Id(12, "organisations", "organisation_id", function(
+    organisation_id
+  ) {
+    var inserts = [organisation_id, JSON.stringify(organisation.details), "{}"];
+    var sql = mysql.format(query, inserts);
+    con.query(sql, function(err) {
+      callback(err, organisation_id);
+    });
+  });
+};
+
 module.exports = Organisations;
