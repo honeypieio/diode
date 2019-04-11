@@ -18,10 +18,14 @@ router.get(
     Users.getById(req.params.user_id, function(err, user) {
       if (!err && user[0]) {
         user = user[0];
+        console.log(req.user.organisations, user.organisations);
         if (
           req.user.class == "global-admin" ||
           (req.user.class == "local-admin" &&
-            Helpers.hasOneInCommon(req.user.organisations, user.organisations))
+            Helpers.hasOneInCommon(
+              req.user.organisations,
+              JSON.parse(user.organisations)
+            ))
         ) {
           UserInvites.getByUserId(req.params.user_id, function(err, tokens) {
             if (tokens.length <= 5) {
